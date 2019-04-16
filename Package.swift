@@ -1,15 +1,21 @@
+// swift-tools-version:4.1
+
 import PackageDescription
 
-var package = Package(
+let package = Package(
     name: "Turnstile",
     targets: [
-        Target(
-            name: "Turnstile",
-            dependencies: [.Target(name: "TurnstileCrypto")]),
-        Target(
-            name: "TurnstileCrypto"),
-        Target(
-            name: "TurnstileWeb",
-            dependencies: [.Target(name: "Turnstile")]),
-        ]
+        .target(
+            name: "Turnstile", 
+            dependencies: ["TurnstileCrypto"]
+        ),
+        .target(
+            name: "TurnstileCrypto", 
+            dependencies: []
+        ),
+        .target(
+            name: "TurnstileWeb", 
+            dependencies: ["Turnstile"]
+        ),    
+    ]
 )
