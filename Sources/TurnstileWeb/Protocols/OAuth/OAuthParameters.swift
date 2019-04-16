@@ -70,16 +70,16 @@ public class OAuthParameters {
     
     /// OAuth Value for Header
     public var header: String {
-        let partialHeader = parameterDictionary.sorted { $0.0.key < $0.1.key }
-        .map { (keyValuePair) -> String in
+        let partialHeader = parameterDictionary.sorted { (lhs, rhs) -> Bool in
+            return lhs.key < rhs.key
+        }.map { (keyValuePair) -> String in
             // From Twitters docs https://dev.twitter.com/oauth/overview/percent-encoding-parameters
             var allowedChars = CharacterSet(charactersIn: "-._~")
             allowedChars.formUnion(.alphanumerics)
             let value = keyValuePair.value.addingPercentEncoding(withAllowedCharacters: allowedChars) ?? ""
             let param = "\(keyValuePair.key)=\"\(value)\""
             return param
-        }
-        .joined(separator: ", ")
+        }.joined(separator: ", ")
         return "OAuth \(partialHeader)"
     }
     
@@ -93,7 +93,7 @@ public class OAuthParameters {
         }
         
         // Parse out OAuth parameters
-        var header = header.substring(from: header.index(header.startIndex, offsetBy: 6))
+        var header = String(header[header.startIndex...])
         
         header = header.replacingOccurrences(of: " ", with: "")
         header = header.replacingOccurrences(of: "\"", with: "")

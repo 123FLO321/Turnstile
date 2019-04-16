@@ -336,7 +336,7 @@ public class BCrypt {
      */
     public static func hash(password: String, salt: BCryptSalt = BCryptSalt()) -> String {
         let bCrypt = BCrypt()
-        let minor: Character = salt.scheme.characters.count == 2 ? salt.scheme[1] : "\0"
+        let minor: Character = salt.scheme.count == 2 ? salt.scheme[1] : "\0"
         
         var passwordPreEncoding = password
         if minor >= "a" {
@@ -404,13 +404,13 @@ public class BCrypt {
         
         j = 0
         for i in 0..<clen {
-            result[j] = Int8(truncatingBitPattern: (cdata[i] >> 24) & 0xff)
+            result[j] = Int8((cdata[i] >> 24) & 0xff)
             j += 1
-            result[j] = Int8(truncatingBitPattern: (cdata[i] >> 16) & 0xff)
+            result[j] = Int8((cdata[i] >> 16) & 0xff)
             j += 1
-            result[j] = Int8(truncatingBitPattern: (cdata[i] >> 8) & 0xff)
+            result[j] = Int8((cdata[i] >> 8) & 0xff)
             j += 1
-            result[j] = Int8(truncatingBitPattern: cdata[i] & 0xff)
+            result[j] = Int8(cdata[i] & 0xff)
             j += 1
         }
         
@@ -463,11 +463,11 @@ public class BCrypt {
     }
     
     private func deinitKey() {
-        p.deinitialize()
-        p.deallocate(capacity: BCrypt.P_orig.count)
+        p.deinitialize(count: BCrypt.P_orig.count)
+        p.deallocate()
         
-        s.deinitialize()
-        s.deallocate(capacity: BCrypt.S_orig.count)
+        s.deinitialize(count: BCrypt.S_orig.count)
+        s.deallocate()
     }
     
     private func key(key: [Int8]) {
@@ -577,7 +577,7 @@ public struct BCryptSalt {
         let saltParts = string.components(separatedBy: "$")
         
         // MCF is $<scheme>$<cost>$<salt><digest>, so 4 parts.
-        guard saltParts.count == 4 && saltParts[3].characters.count >= 16 else {
+        guard saltParts.count == 4 && saltParts[3].count >= 16 else {
             throw BCryptError()
         }
         
@@ -625,7 +625,7 @@ private extension String {
     subscript (r: Range<Int>) -> String {
         let r2 = Range.init(uncheckedBounds: (lower: index(startIndex, offsetBy: r.lowerBound), upper: index(startIndex, offsetBy: r.upperBound)))
         
-        return substring(with: r2)
+        return String(self[r2])
     }
 }
 
@@ -742,7 +742,7 @@ extension BCrypt {
             var c4 : Int8
             var o : Int8
             
-            while off < s.characters.count - 1 && olen < maxolen {
+            while off < s.count - 1 && olen < maxolen {
                 c1 = char64of(x: s[off])
                 off += 1
                 c2 = char64of(x: s[off])
@@ -755,7 +755,7 @@ extension BCrypt {
                 o |= (c2 & 0x30) >> 4
                 result[olen] = o
                 olen += 1
-                if olen >= maxolen || off >= s.characters.count {
+                if olen >= maxolen || off >= s.count {
                     break
                 }
                 
@@ -770,7 +770,7 @@ extension BCrypt {
                 o |= (c3 & 0x3c) >> 2
                 result[olen] = o
                 olen += 1
-                if olen >= maxolen || off >= s.characters.count {
+                if olen >= maxolen || off >= s.count {
                     break
                 }
                 

@@ -36,7 +36,7 @@ public protocol Realm {
 }
 
 public extension Realm {
-    public func register(credentials: Credentials) throws -> Account {
+    func register(credentials: Credentials) throws -> Account {
         throw UnsupportedCredentialsError()
     }
 }

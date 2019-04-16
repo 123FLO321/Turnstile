@@ -128,7 +128,7 @@ open class OAuth2 {
                 throw OAuth2Error(dict: urlComponents.queryDictionary) ?? InvalidAPIResponse()
         }
         
-        let redirectURL = url.substring(to: url.range(of: "?")?.lowerBound ?? url.startIndex)
+        let redirectURL = String(url[..<(url.range(of: "?")?.lowerBound ?? url.startIndex)])
         return try exchange(authorizationCode: AuthorizationCode(code: code, redirectURL: redirectURL))
     }
     
@@ -136,12 +136,12 @@ open class OAuth2 {
 }
 
 public extension Realm where Self: OAuth2 {
-    public func authenticate(authorizationCodeCallbackURL url: String, state: String) throws -> Account {
+    func authenticate(authorizationCodeCallbackURL url: String, state: String) throws -> Account {
         let token = try exchange(authorizationCodeCallbackURL: url, state: state)
         return try self.authenticate(credentials: token.accessToken)
     }
     
-    public func authenticate(authorizationCode: AuthorizationCode) throws -> Account {
+    func authenticate(authorizationCode: AuthorizationCode) throws -> Account {
         let token = try exchange(authorizationCode: authorizationCode)
         return try self.authenticate(credentials: token.accessToken)
     }
